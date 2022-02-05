@@ -13,7 +13,6 @@ import { UrlType } from "@interfaces/index";
 import fetcher from "@utils/fetcher";
 import routerConfig from "@config/router";
 import {
-  converToLocal,
   copyToClipboard,
   formatDate,
   isExpired,
@@ -34,7 +33,7 @@ const fetchUrls = async (): Promise<UrlType[]> => {
 
 const getExpiryString = (expiresAt: number): string => {
   const timeString = formatDate(
-    converToLocal(new Date(expiresAt)),
+    new Date(expiresAt),
     "MMM dd, yyyy hh:mm a"
   );
   return `Expires at ${timeString}`;

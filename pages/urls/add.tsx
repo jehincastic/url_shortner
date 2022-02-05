@@ -11,13 +11,13 @@ import fetcher from "@utils/fetcher";
 import DynamicForm from "@components/DynamicForm";
 import addUrlForm from "@config/forms/addUrl";
 import addUrlSchema from "@schemas/addUrl";
-import { addTime, converToUtc, copyToClipboard } from "@utils/index";
+import { addTime, copyToClipboard } from "@utils/index";
 import routerConfig from "@config/router";
 
 
 export const addNewUrl = async (data: UrlInput): Promise<[boolean, string, number]> => {
   try {
-    const expiresAt = converToUtc(addTime(data.expiresAt)).getTime();
+    const expiresAt = addTime(data.expiresAt).getTime();
     const inputData: UrlInput = {
       ...data,
       expiresAt,

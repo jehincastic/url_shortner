@@ -2,7 +2,6 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 import { CommonResponse } from "@interfaces/index";
 import Prisma from "@lib/prisma";
-import { converToUtc } from "@utils/index";
 
 const ApiHandler = async (
   req: NextApiRequest,
@@ -16,11 +15,11 @@ const ApiHandler = async (
           shortUrl: shortUrl as string,
         },
       });
-      const currentUtcTime = converToUtc(new Date()).getTime();
-      console.log(currentUtcTime);
+      const currentTime = new Date().getTime();
+      console.log(currentTime);
       console.log(Number(data?.expiresAt));
-      console.log(Number(data?.expiresAt) > currentUtcTime);
-      if (data && Number(data.expiresAt) > currentUtcTime) {
+      console.log(Number(data?.expiresAt) > currentTime);
+      if (data && Number(data.expiresAt) > currentTime) {
         return res.status(200).json({
           status: "SUCCESS",
           data: data.longUrl,
