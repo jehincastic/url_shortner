@@ -10,6 +10,7 @@ const routerConfig = {
     me: "/api/me",
     getUrls: "/api/urls/getAll",
     addUrl: "/api/urls/add",
+    getSingleUrl: "/api/urls/",
   }
 };
 export default routerConfig;

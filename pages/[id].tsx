@@ -1,25 +1,40 @@
 import type { NextPage } from "next";
-import { GetServerSideProps } from "next";
 import { useEffect } from "react";
+import { useRouter } from "next/router";
 
 import Layout from "@components/Layout";
-import Prisma from "@lib/prisma";
 import { useAlert } from "@providers/AlertProvider";
-import { isExpired } from "@utils/index";
+import fetcher from "@utils/fetcher";
+import routerConfig from "@config/router";
 
-const UrlPage: NextPage<{msg: string}> = ({
-  msg,
-}) => {
+const UrlPage: NextPage = () => {
+  const router = useRouter();
   const {
     setAlertInfo,
   } = useAlert();
   
   useEffect(() => {
-    setAlertInfo({
-      msg,
-      severity: "error",
-    });
-  }, []);
+    if (router.query.id) {
+      fetcher<{}, string>(
+        `${routerConfig.api.getSingleUrl}/${router.query.id}`,
+        "GET",
+      ).then(data => {
+        if (data.status === "SUCCESS") {
+          window.location.href = data.data;
+        } else {
+          setAlertInfo({
+            msg: data.data as string,
+            severity: "error",
+          });
+        }
+      }).catch(err => {
+        setAlertInfo({
+          msg: err.message,
+          severity: "error",
+        });
+      });
+    }
+  }, [router]);
 
   return (
     <Layout
@@ -28,38 +43,5 @@ const UrlPage: NextPage<{msg: string}> = ({
     />
   );
 };
-
-export const getServerSideProps: GetServerSideProps = async ({
-  query,
-}) => {
-  const shortUrl = query.id;
-  if (typeof shortUrl === "string") {
-    try {
-      const data = await Prisma.url.findFirst({
-        where: {
-          shortUrl,
-        },
-      });
-      if (data && !isExpired(Number(data.expiresAt))) {
-        return {
-          redirect: {
-            permanent: false,
-            destination: data.longUrl,
-          },
-          props:{},
-        };
-      }
-    } catch (err) {
-      return {
-        props: {
-          msg: "Something went wrong",
-        },
-      }
-    }
-  }
-  return {
-    notFound: true,
-  }
-}
 
 export default UrlPage;
