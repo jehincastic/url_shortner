@@ -17,6 +17,9 @@ const ApiHandler = async (
         },
       });
       const currentUtcTime = converToUtc(new Date()).getTime();
+      console.log(currentUtcTime);
+      console.log(Number(data?.expiresAt));
+      console.log(Number(data?.expiresAt) > currentUtcTime);
       if (data && Number(data.expiresAt) > currentUtcTime) {
         return res.status(200).json({
           status: "SUCCESS",
