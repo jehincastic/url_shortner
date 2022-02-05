@@ -47,3 +47,11 @@ export const generateHash = (salt: string, randomInt: number) => {
   const hashids = new Hashids(salt, Number(process.env.HASH_LENGTH || 7));
   return hashids.encode(randomInt);
 };
+
+export const isExpired = (expiresAt: number): boolean => {
+  const localDate = converToLocal(new Date(expiresAt));
+  if (localDate.getTime() < Date.now()) {
+    return true;
+  }
+  return false;
+};

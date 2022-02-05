@@ -10,9 +10,15 @@ import Layout from "@components/Layout";
 import Card from "@components/Card";
 import { useAlert } from "@providers/AlertProvider";
 import { UrlType } from "@interfaces/index";
-import { converToLocal, copyToClipboard, formatDate } from "@utils/index";
 import fetcher from "@utils/fetcher";
 import routerConfig from "@config/router";
+import {
+  converToLocal,
+  copyToClipboard,
+  formatDate,
+  isExpired,
+} from "@utils/index";
+import { addNewUrl } from "./add";
 
 
 const fetchUrls = async (): Promise<UrlType[]> => {
@@ -27,22 +33,18 @@ const fetchUrls = async (): Promise<UrlType[]> => {
 };
 
 const getExpiryString = (expiresAt: number): string => {
-  const timeString = formatDate(converToLocal(new Date(expiresAt)));
+  const timeString = formatDate(
+    converToLocal(new Date(expiresAt)),
+    "MMM dd, yyyy hh:mm a"
+  );
   return `Expires at ${timeString}`;
 };
-
-const isExpired = (expiresAt: number): boolean => {
-  const localDate = converToLocal(new Date(expiresAt));
-  if (localDate.getTime() < Date.now()) {
-    return true;
-  }
-  return false;
-}
 
 const UrlsPage: NextPage = () => {
   const router = useRouter();
   const { setAlertInfo } = useAlert();
   const [loading, setLoading] = useState(true);
+  const [loadingMsg, setLoadingMsg] = useState("Fetching Urls...");
   const [urls, setUrls] = useState<UrlType[]>([]);
 
   useEffect(() => {
@@ -63,7 +65,7 @@ const UrlsPage: NextPage = () => {
   return (
     <Layout
       loading={loading}
-      loadingText="Fetching Urls..."
+      loadingText={loadingMsg}
       isPrivate
     >
       <Box
@@ -99,37 +101,73 @@ const UrlsPage: NextPage = () => {
                 item
                 xs={12}
                 sm={6}
-                md={3}
+                md={4}
                 sx={{
                   mt: 2,
                 }}
               >
                 <Card
-                  title={url.longUrl}
+                  title={
+                    url.longUrl.length > 20
+                      ? `${url.longUrl.slice(0, 20)}...`
+                      : url.longUrl
+                  }
+                  tooltipText={url.longUrl}
                   subTitle={getExpiryString(url.expiresAt)}
-                  btnTitle={["Open Link", "Copy Link"]}
+                  btnTitle={["Open Link", "Copy Link", "Add 30 Minutes"]}
                   btnProps={[{
                     disabled: expired,
                   }, {
                     disabled: expired,
+                  }, {
+                    disabled: !expired,
                   }]}
                   btnAction={[
                     () => {
                       window.open(url.shortUrl, "_blank");
                     },
                     () => {
-                      copyToClipboard(url.shortUrl).then((data) => {
-                        if (data) {
+                      copyToClipboard(`${process.env.baseUrl}/${url.shortUrl}`)
+                        .then((data) => {
+                          if (data) {
+                            setAlertInfo({
+                              msg: "Copied to clipboard",
+                            });
+                          } else {
+                            setAlertInfo({
+                              msg: "Unable To Copy",
+                              severity: "error",
+                            });
+                          }
+                        });
+                    },
+                    () => {
+                      setLoadingMsg("Updating Time...");
+                      setLoading(true);
+                      addNewUrl({
+                        longUrl: url.longUrl,
+                        expiresAt: 30,
+                      }).then(resp => {
+                        const [isSuccess, data, time] = resp;
+                        if (isSuccess) {
                           setAlertInfo({
-                            msg: "Copied to clipboard",
+                            msg: "Url Updated successfully",
                           });
+                          const newUrls = [...urls];
+                          newUrls[idx].expiresAt = time;
+                          setUrls([...newUrls]);
                         } else {
                           setAlertInfo({
-                            msg: "Unable To Copy",
+                            msg: data as string,
                             severity: "error",
                           });
+                          if (data === "Invalid Login") {
+                            router.push(routerConfig.loginPage);
+                          }
                         }
-                      })
+                        setLoading(false);
+                        setLoadingMsg("Fetching Urls...");
+                      });
                     },
                   ]}
                 />

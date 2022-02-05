@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import Layout from "@components/Layout";
 import Prisma from "@lib/prisma";
 import { useAlert } from "@providers/AlertProvider";
+import { isExpired } from "@utils/index";
 
 const UrlPage: NextPage<{msg: string}> = ({
   msg,
@@ -39,7 +40,7 @@ export const getServerSideProps: GetServerSideProps = async ({
           shortUrl,
         },
       });
-      if (data) {
+      if (data && !isExpired(Number(data.expiresAt))) {
         return {
           redirect: {
             permanent: false,

@@ -153,7 +153,7 @@ const Navbar: React.FC = ({ children }) => {
       id: 0,
       firstName: "",
       lastName: "",
-      loading: true,
+      loading: false,
     });
     localStorage.removeItem(process.env.tokenKey || "");
   };
@@ -262,19 +262,6 @@ const Navbar: React.FC = ({ children }) => {
                           transformOrigin={{ horizontal: "right", vertical: "top" }}
                           anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                         >
-                          <MenuItem>
-                            <Avatar
-                              alt={user.firstName}
-                              style={{
-                                alignSelf: "center",
-                              }}
-                              src={getDefaultProfileImg(user.firstName)}
-                              sx={{
-                                width: 32,
-                                height: 32,
-                              }}
-                            /> Profile
-                          </MenuItem>
                           <MenuItem onClick={logOut}>
                             <ListItemIcon>
                               <Logout fontSize="small" />

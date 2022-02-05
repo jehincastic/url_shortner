@@ -8,7 +8,7 @@ const routerConfig = {
     login: "/api/login",
     signup: "/api/signup",
     me: "/api/me",
-    getUrls: "/api/urls",
+    getUrls: "/api/urls/getAll",
     addUrl: "/api/urls/add",
   }
 };

@@ -62,7 +62,7 @@ const ApiHandler = async (
         });
       }
       return res.status(500).json({
-        status: "SUCCESS",
+        status: "FAILED",
         data: "Something went wrong",
       });
     }

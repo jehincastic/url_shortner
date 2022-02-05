@@ -15,11 +15,12 @@ import { addTime, converToUtc, copyToClipboard } from "@utils/index";
 import routerConfig from "@config/router";
 
 
-const addNewUrl = async (data: UrlInput): Promise<[boolean, string]> => {
+export const addNewUrl = async (data: UrlInput): Promise<[boolean, string, number]> => {
   try {
+    const expiresAt = converToUtc(addTime(data.expiresAt)).getTime();
     const inputData: UrlInput = {
       ...data,
-      expiresAt: converToUtc(addTime(data.expiresAt)).getTime(),
+      expiresAt,
     };
     const urlData = await fetcher<UrlInput, string>(
       routerConfig.api.addUrl,
@@ -27,24 +28,22 @@ const addNewUrl = async (data: UrlInput): Promise<[boolean, string]> => {
       inputData,
     );
     if (urlData.status === "SUCCESS") {
-      return [true, urlData.data];
+      return [true, urlData.data, expiresAt];
     }
     throw new Error(urlData.data);
   } catch (err: any) {
-    return [false, err?.message || "Something went wrong"];
+    return [false, err?.message || "Something went wrong", 0];
   }
 };
 
 const AddUrl: NextPage = () => {
   const router = useRouter();
   const { setAlertInfo } = useAlert();
-  const [loading, setLoading] = useState(false);
 
   return (
     <Layout
-      loading={loading}
-      loadingText="Adding New Url..."
       isPrivate
+      showChildOnLoading
     >
       <Box
         sx={{
@@ -58,11 +57,9 @@ const AddUrl: NextPage = () => {
       >
         <DynamicForm<UrlInput>
           submit={async (values, actions) => {
-            setLoading(true);
             const [isSuccess, data] = await addNewUrl(values);
-            setLoading(false);
             if (isSuccess) {
-              await copyToClipboard((data));
+              await copyToClipboard(`${process.env.baseUrl}/${data}`);
               setAlertInfo({
                 msg: "Url added successfully",
               });
@@ -84,7 +81,7 @@ const AddUrl: NextPage = () => {
             expiresAt: 30,
           }}
           schema={addUrlSchema}
-          buttonText="Add New Url"
+          buttonText="Add Or Update Url"
           buttonProps={{
             variant: "text",
           }}

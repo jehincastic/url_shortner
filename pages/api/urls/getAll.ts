@@ -36,7 +36,7 @@ const ApiHandler = async (
       });
     } catch (err) {
       return res.status(500).json({
-        status: "SUCCESS",
+        status: "FAILED",
         data: "Something went wrong",
       });
     }
