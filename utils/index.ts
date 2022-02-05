@@ -50,6 +50,9 @@ export const generateHash = (salt: string, randomInt: number) => {
 
 export const isExpired = (expiresAt: number): boolean => {
   const localDate = converToLocal(new Date(expiresAt));
+  console.log(expiresAt);
+  console.log(localDate);
+  console.log(Date.now());
   if (localDate.getTime() < Date.now()) {
     return true;
   }
