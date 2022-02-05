@@ -18,11 +18,11 @@ const ApiHandler = async (
 ) => {
   if (req.method?.toLowerCase() === "post") {
     try {
-      const isInputValid = validation(signUpSchema, req.body);
-      if (!isInputValid) {
+      const isInputValid = await validation(signUpSchema, req.body);
+      if (!isInputValid[0]) {
         return res.status(400).json({
           status: "FAILED",
-          data: "Invalid Input",
+          data: isInputValid[1],
         });
       }
       const {

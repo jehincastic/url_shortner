@@ -17,11 +17,11 @@ const ApiHandler = async (
   res: NextApiResponse<CommonResponse<LoginResponse | string>>,
 ) => {
   if (req.method?.toLowerCase() === "post") {
-    const isInputValid = validation(loginSchema, req.body);
-    if (!isInputValid) {
+    const isInputValid = await validation(loginSchema, req.body);
+    if (!isInputValid[0]) {
       return res.status(400).json({
         status: "FAILED",
-        data: "Invalid Input",
+        data: isInputValid[1],
       });
     }
     try {
@@ -29,6 +29,7 @@ const ApiHandler = async (
         email,
         password,
       } = req.body as LoginInput;
+      console.log(email, password);
       const user = await prisma.user.findFirst({
         where: {
           email,

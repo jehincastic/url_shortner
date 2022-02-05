@@ -15,11 +15,11 @@ const ApiHandler = async (
     try {
       const [isAuthenticated, info] = getUserInfo(req);
       if (isAuthenticated) {
-        const isInputValid = validation(addUrlSchema, req.body);
-        if (!isInputValid) {
+        const isInputValid = await validation(addUrlSchema, req.body);
+        if (!isInputValid[0]) {
           return res.status(400).json({
             status: "FAILED",
-            data: "Invalid Input",
+            data: isInputValid[1],
           });
         }
         const {

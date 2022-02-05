@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { GetServerSideProps } from 'next'
+import { GetServerSideProps } from "next";
 import { useEffect } from "react";
 
 import Layout from "@components/Layout";
