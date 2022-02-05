@@ -16,9 +16,6 @@ const ApiHandler = async (
         },
       });
       const currentTime = new Date().getTime();
-      console.log(currentTime);
-      console.log(Number(data?.expiresAt));
-      console.log(Number(data?.expiresAt) > currentTime);
       if (data && Number(data.expiresAt) > currentTime) {
         return res.status(200).json({
           status: "SUCCESS",
