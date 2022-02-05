@@ -77,7 +77,7 @@ const Login: NextPage = () => {
             <LockOutlined />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign In
+            Login
           </Typography>
           <DynamicForm<LoginInput>
             submit={async (values, actions) => {
@@ -91,7 +91,7 @@ const Login: NextPage = () => {
               rememberMe: false,
             }}
             schema={loginSchema}
-            buttonText="Sign Up"
+            buttonText="Login"
             fields={loginForm}
           />
           <Grid sx={{ my: 2 }} container>

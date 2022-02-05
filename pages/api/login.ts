@@ -29,7 +29,6 @@ const ApiHandler = async (
         email,
         password,
       } = req.body as LoginInput;
-      console.log(email, password);
       const user = await prisma.user.findFirst({
         where: {
           email,
