@@ -40,6 +40,9 @@ export const getServerSideProps: GetServerSideProps = async ({
           shortUrl,
         },
       });
+      console.log(data);
+      console.log(data?.expiresAt);
+      console.log(Date.now());
       if (data && !isExpired(Number(data.expiresAt))) {
         return {
           redirect: {
