@@ -44,8 +44,16 @@ export const copyToClipboard = async (text: string) => {
 };
 
 export const generateHash = (salt: string, randomInt: number) => {
-  const hashids = new Hashids(salt, Number(process.env.HASH_LENGTH || 7));
-  return hashids.encode(randomInt);
+  // const hashids = new Hashids(salt, Number(process.env.HASH_LENGTH || 7));
+  // return hashids.encode(randomInt);
+  const length = Number(process.env.HASH_LENGTH || 7);
+  const a = "1234567890ABCDEFGHIJKLMNOPQTRSTUVXZY";
+  let retStr = "";
+  for (let i = 0; i < length; i++) {
+      const rndNumb = Math.floor(Math.random() * a.length);
+      retStr += a[rndNumb]
+  }    
+  return retStr;
 };
 
 export const isExpired = (expiresAt: number): boolean => {
